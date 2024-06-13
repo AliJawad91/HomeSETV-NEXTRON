@@ -35,26 +35,43 @@ function LiveStreamComponent() {
         facingMode: 'user',
       },
     });
-    // const mediaStream = await navigator.mediaDevices.getDisplayMedia({
-    //   audio: true,
-    //   video: {
-    //     height: 1080,
-    //     width: 1920,
-    //     frameRate: { ideal: 24, max: 30 },
-    //   },
-    // });
+
     setStream(mediaStream);
     if (videoRef.current) {
       console.log(videoRef.current);
       videoRef.current.srcObject = mediaStream;
     }
-    // stream.current.replaceVideoTrack(stream.current.getVideoTracks()[0]);
-    // stream.current.replaceAudioTrack(stream.current.getAudioTracks()[0]);
+
   };
 
   useEffect(() => {
-    getStream();
+    getStream().then(()=>{
+    startStreamingForVirtualCam();
+
+    });
   }, [videoRef]);
+
+  // useEffect(() => {
+    const startStreamingForVirtualCam = () => {
+      let liveStream = (videoRef.current as any).captureStream(30);
+      // while(liveStream){
+
+        let mediaRecorder = new MediaRecorder(liveStream!, {
+          mimeType: 'video/webm;codecs=h264',
+          videoBitsPerSecond: 3 * 1024 * 1024,
+        });
+    
+        console.log(mediaRecorder, mediaRecorder.ondataavailable);
+        mediaRecorder.ondataavailable = (e: any) => {
+          console.log('sending chunks', e.data);
+          socket.emit("StreamingForVirtualCam",e.data);
+        };
+        mediaRecorder.start(100);
+      // }
+
+
+    };
+  // }, [videoRef])
 
   return (
     <div className='App'>

@@ -89,10 +89,14 @@ io.on('connection', (socket) => {
       });
 
       socket.on('message', (msg) => {
-        console.log('DATA', 'Streaming');
+        console.log('DATA Streaming for youtube');
         ffmpegProcess.stdin.write(msg);
       });
 
+      socket.on('StreamingForVirtualCam',(data)=>{
+        console.log('DATA Streaming for virtual cam (This log is available in server.ts line 97',data);
+        socket.emit('sendStreamToMAC',data);//this is raw stream coming from webcam. use socket.on('sendStreamToMAC',(data)=>{ console.log(data, "this is raw stream"); })
+      })
       socket.conn.on('close', (e) => {
         console.log('kill: SIGINT');
         ffmpegProcess.kill('SIGINT');
