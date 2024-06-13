@@ -1,7 +1,0 @@
-node_modules
-*.log
-.next
-app
-dist
-renderer/.env.local
-main/ffmpeg
