@@ -1,0 +1,9 @@
+node_modules
+*.log
+.next
+app
+dist
+renderer/.env.local
+main/ffmpeg
+yarn.lock
+package-lock.json
