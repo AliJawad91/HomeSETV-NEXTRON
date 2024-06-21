@@ -29,27 +29,18 @@ function LiveStreamComponent() {
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: {
-        // height: { min: 720, max: 1280 },
-        // width: { min: 1080, max: 1920 },
+        height: { min: 720, max: 1280 },
+        width: { min: 1080, max: 1920 },
         frameRate: { min: 15, ideal: 24, max: 30 },
         facingMode: 'user',
       },
     });
-    // const mediaStream = await navigator.mediaDevices.getDisplayMedia({
-    //   audio: true,
-    //   video: {
-    //     height: 1080,
-    //     width: 1920,
-    //     frameRate: { ideal: 24, max: 30 },
-    //   },
-    // });
+
     setStream(mediaStream);
     if (videoRef.current) {
       console.log(videoRef.current);
       videoRef.current.srcObject = mediaStream;
     }
-    // stream.current.replaceVideoTrack(stream.current.getVideoTracks()[0]);
-    // stream.current.replaceAudioTrack(stream.current.getAudioTracks()[0]);
   };
 
   useEffect(() => {
