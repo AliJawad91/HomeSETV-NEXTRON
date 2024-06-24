@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
-function LiveStreamComponent() {
+function VideoCam() {
   const videoRef = useRef<HTMLVideoElement>();
   let socket = io('ws://localhost:3100', {
     transports: ['websocket'],
@@ -9,6 +9,7 @@ function LiveStreamComponent() {
   const [stream, setStream] = useState<MediaStream>();
 
   const startStreaming = () => {
+    console.log('Start Btn Clicked');
     let liveStream = (videoRef.current as any).captureStream(30);
 
     let mediaRecorder = new MediaRecorder(liveStream!, {
@@ -48,26 +49,22 @@ function LiveStreamComponent() {
   }, [videoRef]);
 
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <video
-          width={800}
-          height={600}
-          className='video-container'
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted={true}
-        />
-        <button
-          className=' border-1 border-red-300 rounded bg-gray-50 text-gray-900 mt-10'
-          onClick={startStreaming}
-        >
-          Start Streaming
-        </button>
-      </header>
+    <div className='h-full w-full'>
+      <video
+        className='w-full h-full object-cover'
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted={true}
+      />
+      {/* <button
+        className='absolute top-4 left-4 bg-gray-50 text-gray-900 px-4 py-2 rounded z-50'
+        onClick={startStreaming}
+      >
+        Start Streaming
+      </button> */}
     </div>
   );
 }
 
-export default LiveStreamComponent;
+export default VideoCam;
