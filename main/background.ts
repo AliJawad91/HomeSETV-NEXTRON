@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, ipcMain } from 'electron';
+import { app, ipcMain, BrowserWindow } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 
@@ -11,10 +11,12 @@ if (isProd) {
   app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
 
+let mainWindow: BrowserWindow | null = null;
+
 (async () => {
   await app.whenReady();
 
-  const mainWindow = createWindow('main', {
+  mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
     webPreferences: {
@@ -37,4 +39,30 @@ app.on('window-all-closed', () => {
 
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`);
+});
+
+ipcMain.on('open-frameless-window', (event, url) => {
+  let liveStreamWindow = new BrowserWindow({
+    width: 700,
+    height: 500,
+    frame: false,
+    alwaysOnTop: true,
+    parent: mainWindow,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+    },
+  });
+
+  if (isProd) {
+    liveStreamWindow.loadURL(`app://./${url}`);
+  } else {
+    const port = process.argv[2];
+    liveStreamWindow.loadURL(`http://localhost:${port}/${url}`);
+  }
+
+  liveStreamWindow.on('closed', () => {
+    liveStreamWindow = null;
+  });
 });

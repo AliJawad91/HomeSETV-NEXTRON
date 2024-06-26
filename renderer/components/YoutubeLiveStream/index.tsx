@@ -2,9 +2,9 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { Button } from '../common/Button';
 import Image from 'next/image';
-import MonitorIcon from '../../public/assets/icons/MonitorIcon.svg';
-import VideoTrimming from '../../public/assets/icons/VideoTrimming.svg';
-import VideoCallICon from '../../public/assets/icons/videoCall.svg';
+import MonitorIcon from '../../public/assets/icons/dashboard/MonitorIcon.svg';
+import VideoTrimming from '../../public/assets/icons/dashboard/VideoTrimming.svg';
+import VideoCallICon from '../../public/assets/icons/dashboard/videoCall.svg';
 
 const YoutubeLiveStream = ({ tokens }: { tokens: any }) => {
   const [liveStreamInfo, setLiveStreamInfo] = useState(null);
@@ -93,7 +93,7 @@ const YoutubeLiveStream = ({ tokens }: { tokens: any }) => {
   };
 
   const openThePopUpWIndows = () => {
-    window.open('/LiveStreamPlatform');
+    window.ipc.send('open-frameless-window', 'LiveStreamPlatform');
   };
 
   return (
@@ -103,13 +103,13 @@ const YoutubeLiveStream = ({ tokens }: { tokens: any }) => {
       </div>
 
       <div className='flex justify-center items-start'>
-        <Button>
+        <Button onClick={() => {}}>
           <Image src={VideoCallICon} width={20} height={20} alt='Video Call' />
         </Button>
-        <Button>
+        <Button onClick={() => {}}>
           <Image src={MonitorIcon} width={20} height={20} alt='Monitor Icon' />
         </Button>
-        <Button>
+        <Button onClick={() => {}}>
           <Image src={VideoTrimming} width={20} height={20} alt='Trim Video' />
         </Button>
       </div>
