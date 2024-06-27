@@ -9,13 +9,12 @@ export default function HomePage() {
   const [tokens, setTokens] = useState(null);
   const [liveStreamInfo, setLiveStreamInfo] = useState(null);
   const [isLive, setIsLive] = useState(false);
-
   useEffect(() => {
-    const { tokens: tokensFromURL } = router.query;
+    const { tokens: tokensFromURL, code } = router.query;
 
     if (tokensFromURL) {
       const decodedTokens = JSON.parse(
-        decodeURIComponent(tokensFromURL as any)
+        decodeURIComponent(tokensFromURL as string)
       );
       sessionStorage.setItem('youtube_tokens', JSON.stringify(decodedTokens));
       setTokens(decodedTokens);
@@ -24,20 +23,23 @@ export default function HomePage() {
       const storedTokens = sessionStorage.getItem('youtube_tokens');
       if (storedTokens) {
         setTokens(JSON.parse(storedTokens));
-      } else {
-        const code = router.query.code;
-        if (code) {
-          fetch(`/api/auth?code=${code}`)
-            .then((response) => response.json())
-            .then((data) => {
-              sessionStorage.setItem('youtube_tokens', JSON.stringify(data));
-              setTokens(data);
-              router.replace('/home'); // Clean the URL
-            })
-            .catch((error) => {
-              console.error('Error fetching tokens:', error);
-            });
-        }
+      } else if (code) {
+        fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            sessionStorage.setItem('youtube_tokens', JSON.stringify(data));
+            setTokens(data);
+            router.replace('/home'); // Clean the URL
+          })
+          .catch((error) => {
+            console.error('Error fetching tokens:', error);
+          });
       }
     }
   }, [router.query]);
