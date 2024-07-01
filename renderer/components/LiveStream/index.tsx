@@ -29,8 +29,10 @@ function LiveStreamComponent() {
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: {
-        height: { min: 720, max: 1280 },
-        width: { min: 1080, max: 1920 },
+        height: { min: 480, max: 1280 },
+        width: { min: 640, max: 1920 },
+        // height: { min: 720, max: 1280 },
+        // width: { min: 1080, max: 1920 },
         frameRate: { min: 15, ideal: 24, max: 30 },
         facingMode: 'user',
       },
