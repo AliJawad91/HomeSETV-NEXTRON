@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
-import LiveStreamComponent from '../components/LiveStream';
-import { useRouter } from 'next/router';
 
+import { useRouter } from 'next/router';
+import LiveStreamFromBackend from '../components/LiveStreamFromBackend'
 export default function HomePage() {
   const router = useRouter();
   const [tokens, setTokens] = useState(null);
@@ -128,39 +126,8 @@ export default function HomePage() {
 
   return (
     <React.Fragment>
-      <Head>
-        <title>Live With YOUTUBE</title>
-      </Head>
-      <div className='grid grid-col-1 text-2xl w-full text-center'>
-        <LiveStreamComponent />
-      </div>
-      <div className='mt-1 w-full flex-wrap flex justify-center'>
-        <Link href='/auth'>Authenticate to Youtube</Link>
-      </div>
-      <div className='mt-1 w-full flex-wrap flex justify-center'>
-        <button onClick={startLiveStream} disabled={!tokens}>
-          Start Broadcasting
-        </button>
-      </div>
-      <div className='mt-1 w-full flex-wrap flex justify-center'>
-        {!isLive ? (
-          <button onClick={goLive} disabled={!tokens}>
-            Go Live!
-          </button>
-        ) : (
-          <button onClick={endStream} disabled={!tokens}>
-            End Stream
-          </button>
-        )}
-      </div>
-      <div>
-        {liveStreamInfo && (
-          <div>
-            <p>Stream URL: {liveStreamInfo.ingestionInfo.ingestionAddress}</p>
-            <p>Stream Key: {liveStreamInfo.ingestionInfo.streamName}</p>
-          </div>
-        )}
-      </div>
+
+      <LiveStreamFromBackend />
     </React.Fragment>
   );
 }
