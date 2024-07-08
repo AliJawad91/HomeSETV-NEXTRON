@@ -52,7 +52,7 @@ function LiveStreamComponent() {
   return (
     <div className='App'>
       <header className='App-header'>
-        <video
+        {/* <video
           width={800}
           height={600}
           className='video-container'
@@ -60,6 +60,15 @@ function LiveStreamComponent() {
           autoPlay
           playsInline
           muted={true}
+        /> */}
+        <video
+          autoPlay
+          playsInline
+          muted={true}
+          controls
+          className='video-container'
+          src={'/sample.mp4'}
+          style={{ width: '400px', height: '400px' }}
         />
         <button
           className=' border-1 border-red-300 rounded bg-gray-50 text-gray-900 mt-10'
