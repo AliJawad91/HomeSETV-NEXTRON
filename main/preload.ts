@@ -1,4 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import { platform } from 'os';
+
 
 const handler = {
   send(channel: string, value: unknown) {
@@ -13,8 +15,12 @@ const handler = {
       ipcRenderer.removeListener(channel, subscription)
     }
   },
+  // osVersion: () => os.platform(),
 }
 
 contextBridge.exposeInMainWorld('ipc', handler)
+contextBridge.exposeInMainWorld('electron', {
+  platform :()=>platform(),
+})
 
 export type IpcHandler = typeof handler

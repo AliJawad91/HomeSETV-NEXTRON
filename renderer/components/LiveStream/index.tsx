@@ -2,6 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
 function LiveStreamComponent() {
+  const [osDetail, setOsDetail] = useState('');
+
+  useEffect(() => {
+    const electron = (window as any).electron;
+    console.log(electron.platform(), "platform details");
+    // setOsDetail(detail);
+  }, []);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   let socket = io('ws://localhost:3100', {
     transports: ['websocket'],
