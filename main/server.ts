@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
         "-rtbufsize", `${currentBufferSize}M`,
         '-framerate', '30',     // Set the framerate
         // “-video_size”, “640x480", // Set the video size (optional)
-        '-i', '0',              // Input device index for the webcam (usually 0 for the default webcam)
+        '-i', '1',              // Input device index for the webcam (usually 0 for the default webcam)
         // '-i', 'sunset.jpg',  // Replace with your actual background video path
         '-i', 'backgroundVideo.mp4',  // Replace with your actual background video path
         '-filter_complex',
@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
         // '-fflags', 'nobuffer',
         '-b:v', '2048k',
         // 'scale','640',
-        '-r','60',
+        '-r','30',
         '-f', 'webm',
         'pipe:1',
       ]);
