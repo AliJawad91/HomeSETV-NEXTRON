@@ -6,49 +6,59 @@ const LiveStreamFromBackend = () => {
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
   const socketRef = useRef(null);
+  const queue = useRef([]);
 
   useEffect(() => {
-    console.log("work 1");
     socketRef.current = io('ws://localhost:3100', {
-    transports: ['websocket'],
-  }); // Initialize socket connection
+      transports: ['websocket'],
+    });
 
     const mediaSourceSupported = 'MediaSource' in window && MediaSource.isTypeSupported('video/webm; codecs="vp8"');
 
     if (mediaSourceSupported) {
       const mediaSource = new MediaSource();
-    //   videoSrc = URL.createObjectURL(mediaSource);
-        setVideoSrc(URL.createObjectURL(mediaSource));
+      setVideoSrc(URL.createObjectURL(mediaSource));
       mediaSource.addEventListener('sourceopen', () => {
         const sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
         sourceBuffer.mode = 'sequence';
 
-        socketRef.current.on('video', (data) => {
-          console.log("Socket Responce from on VIDEO ");
-          console.log(data,"datAA");
-          if (sourceBuffer.updating || mediaSource.readyState !== 'open') {
-            console.log("sourceBuffer not updating");
-            
-            return;
+        sourceBuffer.addEventListener('updateend', () => {
+          if (queue.current.length > 0 && !sourceBuffer.updating) {
+            sourceBuffer.appendBuffer(queue.current.shift());
           }
-          console.log("sourceBuffer is updating");
-          sourceBuffer.appendBuffer(new Uint8Array(data));
         });
 
-        socketRef.current.emit('start-stream'); // Request stream from backend
+        socketRef.current.on('video', (data) => {
+          if (mediaSource.readyState === 'open') {
+            if (sourceBuffer.updating || queue.current.length > 0) {
+              queue.current.push(new Uint8Array(data));
+            } else {
+              sourceBuffer.appendBuffer(new Uint8Array(data));
+            }
+          }
+        });
+
+        socketRef.current.emit('start-stream');
+      });
+
+      mediaSource.addEventListener('error', (e) => {
+        console.error('MediaSource error:', e);
+        setError('MediaSource encountered an error');
       });
     } else {
       setError('MediaSource or codecs not supported');
     }
 
-    return () => { // Cleanup on component unmount
+    return () => {
       if (mediaSource) {
-        mediaSource.src = null;
         mediaSource.removeEventListener('sourceopen', () => {});
+        mediaSource.removeEventListener('error', () => {});
       }
-      socketRef.current.disconnect(); // Close socket connection
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
-  }, []); // Empty dependency array for one-time initialization
+  }, []);
 
   return (
     <div>
