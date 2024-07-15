@@ -110,7 +110,7 @@ io.on("connection", (socket) => {
     ffmpeg = spawn("ffmpeg", [
         "-f", "dshow",
         "-rtbufsize", `${currentBufferSize}M`,
-        "-i", "video=MyWebCamera", // Assuming your webcam device name
+        "-i", "video=USB2.0 Camera", // Assuming your webcam device name
         "-i", "sunset.jpg",
         "-filter_complex",
         "[0:v]chromakey=color=0x42bba6:similarity=0.06:blend=0.02, scale=640:-1[intro]; [1:v][intro]overlay=x=0:y=-0",
