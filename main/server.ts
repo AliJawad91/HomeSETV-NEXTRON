@@ -51,7 +51,6 @@ const io = new Server(WS_PORT, {
 
 let currentBufferSize = 1024; // Initial buffer size in MB
 
-io.on("connection", (socket) => {
   let ffmpeg;
 
   const startFFmpeg = () => {
@@ -79,7 +78,7 @@ io.on("connection", (socket) => {
       ]);
     ffmpeg.stdout.on("data", (data) => {
         console.log("data of",data);
-      socket.emit("video", data);
+      // socket.emit("video", data);
     });
 
     ffmpeg.stderr.on("data", (data) => {
@@ -111,14 +110,19 @@ io.on("connection", (socket) => {
       startFFmpeg();
     }
   };
+  
+  startFFmpeg();
+  io.on("connection", (socket) => {
 
   socket.on("start-stream", () => {
-    startFFmpeg();
+    console.log("Socket Recieved on start-stream");
+    
   });
-
+  
   socket.on("disconnect", () => {
-    if (ffmpeg) {
-      ffmpeg.kill("SIGTERM");
-    }
+    console.log("Socket Disconnected");
+    // if (ffmpeg) {
+    //   ffmpeg.kill("SIGTERM");
+    // }
   });
 });
