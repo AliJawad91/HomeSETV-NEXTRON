@@ -79,6 +79,8 @@ let currentBufferSize = 1024; // Initial buffer size in MB
     ffmpeg.stdout.on("data", (data) => {
         console.log("data of",data);
       // socket.emit("video", data);
+      io.emit('video', data); // Emit the video buffer to all connected clients
+
     });
 
     ffmpeg.stderr.on("data", (data) => {

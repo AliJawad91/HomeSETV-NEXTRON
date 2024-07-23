@@ -29,14 +29,20 @@ const LiveStreamFromBackend = () => {
         });
 
         socketRef.current.on('video', (data) => {
+          // sourceBufferRef.current.updating || mediaSourceRef.current.readyState !== 'open'
+// console.log(mediaSource,"mediaSource");
           if (mediaSource.readyState === 'open') {
             if (sourceBuffer.updating || queue.current.length > 0) {
               queue.current.push(new Uint8Array(data));
+              console.log("ONE");
             } else {
+              console.log("TWO");
               sourceBuffer.appendBuffer(new Uint8Array(data));
             }
+            console.log("Three");
           }
         });
+        console.log("Four");
 
         socketRef.current.emit('start-stream');
       });
