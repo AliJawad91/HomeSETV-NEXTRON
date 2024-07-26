@@ -60,10 +60,12 @@ let currentBufferSize = 1024; // Initial buffer size in MB
         '-framerate', '30',     // Set the framerate
         // “-video_size”, “640x480", // Set the video size (optional)
         '-i', '0',              // Input device index for the webcam (usually 0 for the default webcam)
-        // '-i', 'sunset.jpg',  // Replace with your actual background video path
-        '-i', 'sunset.jpg',  // Replace with your actual background video path
+        // '-i', 'backgroundVideo.mp4',  // Replace with your actual background video path
+        '-i', 'homepage.webp',  // Replace with your actual background video path
         '-filter_complex',
-        `[0:v]chromakey=color=0x75d297:similarity=0.1:blend=0.01, scale=1280:-1[intro]; [1:v][intro]overlay=x=0:y=0`,
+        `[0]scale=1280:720,chromakey=color=0x75d297:similarity=0.1:blend=0.01[intro]; [1]scale=1280:720[background]; [background][intro]overlay=x=0:y=0`,
+
+        // `[0:v]chromakey=color=0x75d297:similarity=0.1:blend=0.01, scale=1080:720[intro]; [1:v][intro]overlay=x=0:y=0`,
         '-an',
         '-c:v', 'libvpx',
         '-preset', 'medium',  // Change preset to ultrafast for lower latency

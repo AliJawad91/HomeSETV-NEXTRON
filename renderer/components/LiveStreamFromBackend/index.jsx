@@ -68,7 +68,6 @@ const LiveStreamFromBackend = () => {
 
   return (
     <div>
-      <h1>Video Stream</h1>
       {error ? (
         <p>Error: {error}</p>
       ) : (
