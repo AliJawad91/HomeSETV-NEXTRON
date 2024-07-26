@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 // import { useRouter } from 'next/router';
 import LiveStreamFromBackend from '../../components/LiveStreamFromBackend';
+import VideoPlayer from '../../components/VideoPlayer'
 export default function HomePage() {
   // const router = useRouter();
   // const [tokens, setTokens] = useState(null);
@@ -127,7 +128,8 @@ export default function HomePage() {
   return (
     <React.Fragment>
 
-      <LiveStreamFromBackend />
+      {/* <LiveStreamFromBackend /> */}
+      <VideoPlayer />
     </React.Fragment>
   );
 }
