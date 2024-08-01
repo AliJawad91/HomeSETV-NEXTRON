@@ -128,8 +128,9 @@ export default function HomePage() {
   return (
     <React.Fragment>
 
-      <LiveStreamFromBackend />
-      {/* <VideoPlayer/> */}
+      {/* <LiveStreamFromBackend /> */}
+      MAngo
+      <VideoPlayer/>
     </React.Fragment>
   );
 }

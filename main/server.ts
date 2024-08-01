@@ -17,9 +17,11 @@ let streamDetails = {
 
 app.use(cors());
 app.use(express.json({ limit: '200mb' }));
+
 app.use(
   express.urlencoded({ limit: '200mb', extended: true, parameterLimit: 50000 })
 );
+app.use(express.static(path.join(__dirname+'/public')));
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Application works!');
@@ -53,53 +55,102 @@ let currentBufferSize = 1024; // Initial buffer size in MB
 
   let ffmpeg;
 
+  // const startFFmpeg = () => {
+  //   ffmpeg = spawn("ffmpeg", [
+  //       '-f','avfoundation',
+  //       "-rtbufsize", `${currentBufferSize}M`,
+  //       '-framerate', '30',     // Set the framerate
+  //       // “-video_size”, “640x480", // Set the video size (optional)
+  //       '-i', '0',              // Input device index for the webcam (usually 0 for the default webcam)
+  //       // '-i', 'backgroundVideo.mp4',  // Replace with your actual background video path
+  //       '-i', 'homepage.webp',  // Replace with your actual background video path
+  //       '-filter_complex',
+  //       `[0]scale=1280:720,chromakey=color=0x75d297:similarity=0.1:blend=0.01[intro]; [1]scale=1280:720[background]; [background][intro]overlay=x=0:y=0`,
+  //       '-an',
+
+  //       // `[0:v]chromakey=color=0x75d297:similarity=0.1:blend=0.01, scale=1080:720[intro]; [1:v][intro]overlay=x=0:y=0`,
+  //       '-c:v', 'libvpx',
+  //       '-preset', 'medium',  // Change preset to ultrafast for lower latency
+  //       '-deadline', 'realtime',
+  //       // '-tune', 'zerolatency',
+  //       // '-fflags', 'nobuffer',
+  //       '-b:v', '2048k',
+  //       // 'scale','640',
+  //       '-r','30',
+  //       // '-f', 'hls', 
+  //       // '-hls_time', '10', 
+  //       // '-hls_list_size', '0', 
+  //       // '-hls_flags', 'delete_segments+append_list',
+  //       '-f', 'webm',
+  //       'pipe:1',
+  //     ]);
+  //   ffmpeg.stdout.on("data", (data) => {
+  //       console.log("data of",data);
+  //     // socket.emit("video", data);
+  //     io.emit('video', data); // Emit the video buffer to all connected clients
+
+  //   });
+
+  //   ffmpeg.stderr.on("data", (data) => {
+  //     const log = data.toString();
+  //     console.error(`ffmpeg stderr: ${log}`);
+
+  //     // Analyze the stderr log for buffer overflow or performance issues
+  //     if (log.includes("buffer underflow") || log.includes("buffer overflow") || log.includes("too full or near too full")) {
+  //       adjustBufferSize();
+  //     }
+  //   });
+
+  //   ffmpeg.on("close", () => {
+  //     console.log("FFmpeg process closed");
+  //   });
+  // };
+  console.log(
+        path.join(__dirname+ '/public'),"PATHHH"  
+
+      );
+  
   const startFFmpeg = () => {
     ffmpeg = spawn("ffmpeg", [
-        '-f','avfoundation',
-        "-rtbufsize", `${currentBufferSize}M`,
-        '-framerate', '30',     // Set the framerate
-        // “-video_size”, “640x480", // Set the video size (optional)
-        '-i', '0',              // Input device index for the webcam (usually 0 for the default webcam)
-        // '-i', 'backgroundVideo.mp4',  // Replace with your actual background video path
-        '-i', 'homepage.webp',  // Replace with your actual background video path
-        '-filter_complex',
-        `[0]scale=1280:720,chromakey=color=0x75d297:similarity=0.1:blend=0.01[intro]; [1]scale=1280:720[background]; [background][intro]overlay=x=0:y=0`,
+      '-f', 'avfoundation',
+      '-rtbufsize', `${currentBufferSize}M`,
+      '-framerate', '30',
+      '-i', '0',
+      '-i', 'homepage.webp',
+      '-filter_complex',
+      `[0]scale=1280:720,chromakey=color=0x43cab8:similarity=0.1:blend=0.01[intro]; [1]scale=1280:720[background]; [background][intro]overlay=x=0:y=0`,
+      '-an',
+      '-c:v', 'libx264',
+      '-preset', 'veryfast',  // Use a faster preset
+      '-tune', 'zerolatency', // Tune for low latency
+      '-g', '30',             // Keyframe interval for HLS (should match framerate)
 
-        // `[0:v]chromakey=color=0x75d297:similarity=0.1:blend=0.01, scale=1080:720[intro]; [1:v][intro]overlay=x=0:y=0`,
-        '-an',
-        '-c:v', 'libvpx',
-        '-preset', 'medium',  // Change preset to ultrafast for lower latency
-        '-deadline', 'realtime',
-        // '-tune', 'zerolatency',
-        // '-fflags', 'nobuffer',
-        '-b:v', '2048k',
-        // 'scale','640',
-        '-r','30',
-        '-f', 'webm',
-        'pipe:1',
-      ]);
-    ffmpeg.stdout.on("data", (data) => {
-        console.log("data of",data);
-      // socket.emit("video", data);
-      io.emit('video', data); // Emit the video buffer to all connected clients
-
-    });
-
+      // '-deadline', 'realtime',
+      // '-b:v', '2048k',
+      // '-r', '30',
+      '-f', 'hls', 
+      '-hls_time', '1', 
+      '-hls_list_size', '0', 
+      '-hls_flags', 'delete_segments+append_list',
+      path.join(__dirname, 'public', 'stream.m3u8'),
+    ]);
+  
     ffmpeg.stderr.on("data", (data) => {
       const log = data.toString();
       console.error(`ffmpeg stderr: ${log}`);
-
-      // Analyze the stderr log for buffer overflow or performance issues
+  
       if (log.includes("buffer underflow") || log.includes("buffer overflow") || log.includes("too full or near too full")) {
         adjustBufferSize();
       }
     });
-
+  
     ffmpeg.on("close", () => {
       console.log("FFmpeg process closed");
     });
   };
-
+  
+  startFFmpeg();
+  
   const adjustBufferSize = () => {
     if (currentBufferSize < 4096) {
       currentBufferSize += 256; // Increase buffer size by 128MB
@@ -115,18 +166,18 @@ let currentBufferSize = 1024; // Initial buffer size in MB
     }
   };
   
-  startFFmpeg();
-  io.on("connection", (socket) => {
+  // startFFmpeg();
+//   io.on("connection", (socket) => {
 
-  socket.on("start-stream", () => {
-    console.log("Socket Recieved on start-stream");
+//   socket.on("start-stream", () => {
+//     console.log("Socket Recieved on start-stream");
     
-  });
+//   });
   
-  socket.on("disconnect", () => {
-    console.log("Socket Disconnected");
-    // if (ffmpeg) {
-    //   ffmpeg.kill("SIGTERM");
-    // }
-  });
-});
+//   socket.on("disconnect", () => {
+//     console.log("Socket Disconnected");
+//     // if (ffmpeg) {
+//     //   ffmpeg.kill("SIGTERM");
+//     // }
+//   });
+// });

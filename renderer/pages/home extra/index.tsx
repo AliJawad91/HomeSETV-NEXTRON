@@ -129,6 +129,7 @@ export default function HomePage() {
     <React.Fragment>
 
       {/* <LiveStreamFromBackend /> */}
+      apple
       <VideoPlayer />
     </React.Fragment>
   );
