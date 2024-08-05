@@ -101,16 +101,18 @@ const VideoPlayer = () => {
 
   useEffect(() => {
     playerRef.current = videojs(videoRef.current, {
-      controls: true,
+      controls: false,
       autoplay: true,
       preload: 'auto',
       html5: {
         hls: {
           overrideNative: true,
-          lowLatency: true, // Enable low-latency mode in Video.js
+          lowLatency: true, 
           smoothQualityChange: true,
-          liveSyncDuration: 1, // Adjust sync duration
-          liveMaxLatencyDuration: 2, // Adjust max latency duration
+          liveSyncDuration: 1, 
+          liveMaxLatencyDuration: 1, 
+          liveSyncDurationCount: 1,
+          liveMaxLatencyDurationCount: 1,
         },
       },
       sources: [{
