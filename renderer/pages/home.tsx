@@ -129,7 +129,7 @@ export default function HomePage() {
     <React.Fragment>
 
       {/* <LiveStreamFromBackend /> */}
-      MAngo
+   
       <VideoPlayer/>
     </React.Fragment>
   );

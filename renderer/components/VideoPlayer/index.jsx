@@ -116,7 +116,7 @@ const VideoPlayer = () => {
         },
       },
       sources: [{
-        src: 'http://localhost:5100/stream.m3u8',
+        src: 'http://localhost:80/stream.m3u8',
         type: 'application/x-mpegURL'
       }]
     });
